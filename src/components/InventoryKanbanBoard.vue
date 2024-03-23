@@ -8,9 +8,13 @@ const lowOnStockPaints = ref(['Yellow'])
 const outOfStockPaints = ref(['Green', 'Blue', 'Cyan'])
 const paints = ref([availablePaints, lowOnStockPaints, outOfStockPaints])
 const paintQuantities = ref({
-    "Red":5000,
-    "Black":5,
-    "Purple":2
+    "Red":25,
+    "Black":30,
+    "Purple":40,
+    "Yellow":10,
+    "Green":0,
+    "Blue":0,
+    "Cyan":0
 })
 const lastUpdated = ref()
 const lastUpdateAuthor = ref()

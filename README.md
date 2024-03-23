@@ -1,6 +1,6 @@
-# paint-company-frontend
+# paint-company
 
-This is the frontend of the paint company web application. 
+This is the frontend of the paint company web application built using Vue.js and TailwindCSS.
 
 ## Project Setup
 
