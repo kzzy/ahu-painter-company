@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import * as firebaseAuth from "firebase/auth";
+import { getDatabase } from "firebase/database"
 
 const firebaseConfig = {
     apiKey: "FIREBASE_API_KEY",
@@ -12,26 +13,8 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-const auth = firebaseAuth.getAuth(firebaseApp)
-const emailAuthProvider = firebaseAuth.EmailAuthProvider.PROVIDER_ID;
+const auth = firebaseAuth.getAuth(firebaseApp);
+const db = getDatabase(firebaseApp);
 
-function createNewAccount(auth, email, pass, displayName) {
-    firebaseAuth.createUserWithEmailAndPassword(auth, email, pass).then((userCredential) => {
-        const user = userCredential.user;
-        console.log("Created new account:", user)
-
-        firebaseAuth.updateProfile(user, {
-            displayName: displayName
-        }).then(() => {
-            console.log("Successfully updated the profile with displayname:", displayName)
-        }).catch(() => {
-            console.log("Failed to update the profile with displayname", displayName)
-        })
-    }).catch((err) => {
-        console.log("Signup error:", err)
-    })
-}
-
-export { createNewAccount }
-export { auth, emailAuthProvider }
+export { auth, db }
 export default firebaseApp

@@ -1,12 +1,9 @@
 <script setup>
-import AccountBar from '@/components/AccountBar.vue'
 import InventoryKanbanBoard from '@/components/InventoryKanbanBoard.vue'
 </script>
 
 <template>
   <main>
-    <AccountBar />
-    <h1 class="text-4xl font-light my-8">🖌️ A Paint Company</h1>
     <InventoryKanbanBoard />
   </main>
 </template>

@@ -1,4 +1,5 @@
 <script setup>
+import { RouterLink } from 'vue-router'
 import LoginBox from '@/components/LoginBox.vue'
 import { ref, computed } from 'vue' 
 import * as firebaseAuth from "firebase/auth";
@@ -21,6 +22,7 @@ firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
     }
 })
 
+// Concludes authentication period for the user
 async function logout() {
     await firebaseAuth.signOut(auth).then(() => {
         console.log("Successfully Logged out")
@@ -35,7 +37,7 @@ async function logout() {
     <div class="flex gap-4 select-none">
         <div class="ml-auto"></div>
         <div>
-            <div v-if="!isSignedIn" class="hover:cursor-pointer" @click="toggleLoginBox = !toggleLoginBox">
+            <div v-if="!isSignedIn" class="hover:cursor-pointer hover:text-gray-500" @click="toggleLoginBox = !toggleLoginBox">
                 Login
             </div>
             <div v-if="!isSignedIn && toggleLoginBox" class="relative">
@@ -45,7 +47,8 @@ async function logout() {
         <div v-if="isSignedIn">
             Signed in as {{ user.displayName }}
         </div>
-        <div v-if="isSignedIn" class="hover:cursor-pointer" @click="logout()">
+        <RouterLink to="/admin" class="hover:cursor-pointer hover:text-gray-500">Admin</RouterLink>
+        <div v-if="isSignedIn" class="hover:cursor-pointer hover:text-gray-500" @click="logout()">
             Logout
         </div>
     </div>

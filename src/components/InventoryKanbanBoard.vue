@@ -92,7 +92,7 @@ const paintBackgroundColorMap = {
                                 <div class="w-16 h-1" :class="paintBackgroundColorMap[availablePaints]"></div>
                             </div>
                             <div class="flex text-sm ml-auto">
-                                <input v-model="paintQuantities[availablePaints]" type="number" class="w-12 h-5 text-right" :class="{'border': canEditBoard}" :disabled="!canEditBoard"></input>
+                                <input v-model="paintQuantities[availablePaints]" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
                                 <div class="ml-1">Gal</div>
                             </div>
                         </div>
@@ -110,7 +110,7 @@ const paintBackgroundColorMap = {
                                 <div class="w-20 h-1" :class="paintBackgroundColorMap[lowOnStockPaints]"></div>
                             </div>
                             <div class="flex text-sm ml-auto">
-                                <input v-model="paintQuantities[lowOnStockPaints]" type="number" class="w-12 h-5 text-right" :class="{'border': canEditBoard}" :disabled="!canEditBoard"></input>
+                                <input v-model="paintQuantities[lowOnStockPaints]" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
                                 <div class="ml-1">Gal</div>
                             </div>
                         </div>
@@ -128,7 +128,7 @@ const paintBackgroundColorMap = {
                                 <div class="w-20 h-1" :class="paintBackgroundColorMap[outOfStockPaints]"></div>
                             </div>
                             <div class="flex text-sm ml-auto">
-                                <input v-model="paintQuantities[outOfStockPaints]" type="number" class="w-12 h-5 text-right" :class="{'border': canEditBoard}" :disabled="!canEditBoard"></input>
+                                <input v-model="paintQuantities[outOfStockPaints]" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
                                 <div class="ml-1">Gal</div>
                             </div>
                         </div>

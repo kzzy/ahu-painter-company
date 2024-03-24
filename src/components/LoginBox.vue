@@ -5,7 +5,7 @@ import { auth } from '@/firebase'
 
 const username = ref('')
 const password = ref('')
-const responseMessage = ref("")
+const responseMessage = ref('')
 const loginErrorMap = ({ 
     "WrongCredentials": "❗ Incorrect Email or Password",
     "EmptyEmail": "❗ Please fill in your email",
