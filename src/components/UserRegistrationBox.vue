@@ -50,6 +50,8 @@ async function createUser(email, password, displayName, role) {
             name:displayName,
             role:role
         });
+        responseMessage.value = userCreationResponseMap['Success']
+        clearRefValues()
 
     }).catch((err) => {
         responseMessage.value = userCreationResponseMap['ErrorCreating']
@@ -57,10 +59,16 @@ async function createUser(email, password, displayName, role) {
     })
 }
 
+function clearRefValues() {
+    email.value = ''
+    password.value = ''
+    newDisplayName.value = ''
+    role.value = ''
+}
 </script>
 
 <template>
-    <div class="w-80 h-fit p-4 border rounded-lg bg-white text-black font-semibold">
+    <div class="w-96 h-fit p-4 border rounded-lg bg-white text-black font-semibold">
         <h1 class="text-2xl mb-4">New User Creation</h1>
         <div class="flex flex-col gap-2">
             <div>Email</div>

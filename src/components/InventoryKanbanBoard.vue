@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import draggable from 'vuedraggable';
+import * as firebaseAuth from "firebase/auth";
+import { db } from '@/firebase'
+import { ref as fbref, get } from '@firebase/database'
 
-// Testing dummy variables
 const availablePaints = ref(['Red', 'Black', 'Purple'])
 const lowOnStockPaints = ref(['Yellow'])
 const outOfStockPaints = ref(['Green', 'Blue', 'Cyan'])
@@ -18,9 +20,19 @@ const paintQuantities = ref({
 })
 const lastUpdated = ref()
 const lastUpdateAuthor = ref()
-const userPerms = ref('Painter') // Guest, Painter, Admin
+const userPerms = ref('Reader')
 const userBoardInteractState = ref('Viewing')
 const canEditBoard = ref(false)
+
+const authObservable = firebaseAuth.getAuth();
+// Observable to watch onAuthState
+firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
+    if(userCredential) {
+        setPermissions(userCredential.uid)
+    } else {
+        userPerms.value = 'Reader'
+    }
+})
 
 const getPaintInventory = () => {
 
@@ -67,6 +79,15 @@ const paintBackgroundColorMap = {
     "Green": "bg-green-400",
     "Cyan": "bg-cyan-400"
   }
+
+const setPermissions = (userID) => {
+    get(fbref(db, 'users/' + userID)).then((snapshot) => {
+        userPerms.value = snapshot.val().role
+        console.log("Succesfully allocated permissions to current user")
+    }).catch((err) => {
+        console.log("Failed to retrieve user permissions:", err)
+    })
+}
 </script>
 
 <template>
