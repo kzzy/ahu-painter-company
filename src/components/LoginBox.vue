@@ -29,7 +29,7 @@ async function login() {
     }
 
     await firebaseAuth.signInWithEmailAndPassword(auth, email.value, password.value).catch((err) => {
-        console.log(err)
+        console.error(err)
         responseMessage.value = loginErrorMap["WrongCredentials"]
     })
 }

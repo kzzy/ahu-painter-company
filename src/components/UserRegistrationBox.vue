@@ -81,7 +81,7 @@ async function createUser(email, password, displayName, role) {
     clearRefValues()
 }
 
-// Cleanup fields after successful operation to avoid multiple submittion
+// Cleanup fields after successful operation to avoid multiple submissions
 const clearRefValues = () => {
     email.value = ''
     password.value = ''
