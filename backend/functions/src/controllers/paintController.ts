@@ -1,29 +1,28 @@
 import { Request, Response } from 'express';
 import { db } from '../config/firebase' 
 
-// GET all paints
+// Get all paints (quantity and status)
 const getStock = async(req:Request, res:Response) => {
-    db.ref("paints").get().then((snapshot) => {
-        if (snapshot.exists()) {
-            return res.status(200).json(snapshot)
-        } else {
-            return res.status(500).json("Something went wrong with getPaint")
-        }
-    }) 
+    try {
+        const snapshot = await db.ref("paints").get()
+        return res.status(200).json(snapshot)
+    } catch (err) {
+        return res.status(500).json("Something went wrong with getPaint:")
+    }
 }
 
-// PATCH paint entry
+// Update paint quantity and status
 const updateStock = async(req:Request, res:Response) => {
     const {body: {quantity, status}, params: {colour}} = req;
 
     try {
-        const colourKey = db.ref("paints").child(colour);
+        const colourRef = db.ref("paints").child(colour);
         const updatedPaintStockObj = {
             quantity: quantity,
             status: status,
         };
 
-        await colourKey.update(updatedPaintStockObj).catch((err) => {
+        await colourRef.update(updatedPaintStockObj).catch((err) => {
             return res.status(400).json({
                 status: "error",
                 message: err.message
@@ -40,15 +39,42 @@ const updateStock = async(req:Request, res:Response) => {
     }
 }
 
-// GET last timestamp and author
+// Get last action history (author and timestamp)
 const getLastUpdate = async(req:Request, res:Response) => {
-    db.ref("updatehistory").get().then((snapshot) => {
-        if (snapshot.exists()) {
-            return res.status(200).json(snapshot)
-        } else {
-            return res.status(500).json("Something went wrong with getLastUpdate")
-        }
-    }) 
+    try {
+        const snapshot = await db.ref("updatehistory").get()
+        return res.status(200).json(snapshot)
+    } catch (err) {
+        return res.status(500).json("Something went wrong with getLastUpdate")
+    }
 }
 
-export { getStock, updateStock, getLastUpdate }
+// Update last action history with author and timestamp
+const updateLastUpdate = async(req:Request, res:Response) => {
+    const {body: {author, timestamp}} = req;
+
+    try {
+        const ref = db.ref("updatehistory");
+        const updatedHistoryObj = {
+            author: author,
+            timestamp: timestamp,
+        };
+
+        await ref.update(updatedHistoryObj).catch((err) => {
+            return res.status(400).json({
+                status: "error",
+                message: err.message
+            })
+        })
+
+        return res.status(200).json({
+            status: "success",
+            message: "Last save history updated successfully",
+            data: updatedHistoryObj
+        })
+    } catch (err) {
+        return res.status(500).json("Failed to update history")
+    }
+}
+
+export { getStock, updateStock, getLastUpdate, updateLastUpdate }

@@ -3,7 +3,7 @@ import * as serviceAccount from "./admin.json"
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as admin.ServiceAccount), 
-    databaseURL: ""
+    databaseURL: "https://paintcompany-f9438-default-rtdb.firebaseio.com/"
 })
 
 const db = admin.database();
