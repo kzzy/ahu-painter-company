@@ -102,4 +102,4 @@ const deleteFBAuthUser = async(req:Request, res:Response) => {
     }
 }
 
-export { getAllUsers, createDBUser, updateDBUser, deleteDBUser, createFBAuthUser, deleteFBAuthUser }
+export { createDBUser, updateDBUser, deleteDBUser, createFBAuthUser, deleteFBAuthUser }
