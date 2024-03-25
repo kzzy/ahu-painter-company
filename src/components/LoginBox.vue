@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import * as firebaseAuth from "firebase/auth";
 import { auth } from '@/firebase'
 
-const username = ref('')
+const email = ref('')
 const password = ref('')
 const responseMessage = ref('')
 const loginErrorMap = ({ 
@@ -15,10 +15,10 @@ const loginErrorMap = ({
 
 async function login() {
     // Preliminary input length checks
-    if(username.value.length == 0 && password.value.length == 0) {
+    if(email.value.length == 0 && password.value.length == 0) {
         responseMessage.value = loginErrorMap["EmptyEmailAndPassword"]
         return
-    } else if(username.value.length == 0) {
+    } else if(email.value.length == 0) {
         responseMessage.value = loginErrorMap["EmptyEmail"]
         return
     } else if(password.value.length == 0) {
@@ -26,7 +26,7 @@ async function login() {
         return
     }
 
-    await firebaseAuth.signInWithEmailAndPassword(auth, username.value, password.value).then((userCredential) => {
+    await firebaseAuth.signInWithEmailAndPassword(auth, email.value, password.value).then((userCredential) => {
         console.log("Signed into user account:", userCredential.user)
     }).catch((err) => {
         console.log(err)
@@ -40,7 +40,7 @@ async function login() {
     <div class="absolute right-2 px-4 pt-4 mt-2 w-60 h-60 rounded-lg bg-blue-300 text-xl text-black drop-shadow-xl">
         <div class="mb-3">
             <h3 class="mb-1 text-2xl font-semibold">Email</h3>
-            <input v-model="username" placeholder="Employee Email" class="pl-1 w-full outline-none rounded-md text-lg font-normal"/>
+            <input v-model="email" placeholder="Employee Email" class="pl-1 w-full outline-none rounded-md text-lg font-normal"/>
         </div>
         <div class="mb-3">
             <h3 class="mb-1 text-2xl font-semibold">Password</h3>

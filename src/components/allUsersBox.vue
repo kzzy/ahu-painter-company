@@ -30,8 +30,6 @@ const selectFocusedUser = (userKey, userObj) => {
 }
 
 const updateUserSettings = (userKey, email, displayName, role) => {
-    auth.updateUser
-
     update(fbref(db, 'users/' + userKey), {
         email:email,
         name:displayName,

@@ -3,8 +3,8 @@ import { RouterLink } from 'vue-router'
 import LoginBox from '@/components/LoginBox.vue'
 import { ref, computed } from 'vue' 
 import * as firebaseAuth from "firebase/auth";
-import { auth, db } from '@/firebase'
-import { ref as fbref, get } from '@firebase/database'
+import { auth } from '@/firebase'
+import { getUsername, getRole } from './helpers/helper';
 
 const authObservable = firebaseAuth.getAuth();
 const user = ref()
@@ -20,9 +20,11 @@ firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
     if(userCredential) {
         user.value = userCredential
         updateAccountBar(userCredential.uid)
+
     } else {
         user.value = null
         toggleLoginBox.value = false
+        isAdmin.value = false
     }
 })
 
@@ -30,22 +32,19 @@ firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
 async function logout() {
     await firebaseAuth.signOut(auth).then(() => {
         console.log("Successfully Logged out")
+
     }).catch((err) => {
         console.log("Logout error:", err)
     })
 }
 
-const updateAccountBar = (userID) => {
-    get(fbref(db, 'users/' + userID)).then((snapshot) => {
-        username.value = snapshot.val().name
-        if(snapshot.val().role == 'Admin') {
-            isAdmin.value = true
-        }
-    }).catch((err) => {
-        console.log("Failed to retrieve user permissions:", err)
-    })
-}
+const updateAccountBar = async (userID) => {
+    username.value = await getUsername(userID)
 
+    if(await getRole(userID) == 'Admin') {
+        isAdmin.value = true
+    }
+}
 </script>
 
 <template>

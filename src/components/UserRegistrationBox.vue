@@ -59,7 +59,7 @@ async function createUser(email, password, displayName, role) {
     })
 }
 
-function clearRefValues() {
+const clearRefValues = () => {
     email.value = ''
     password.value = ''
     newDisplayName.value = ''
