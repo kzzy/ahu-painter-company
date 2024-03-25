@@ -15,7 +15,7 @@ const loginErrorMap = ({
 
 // Clientside Firebase User Authentication
 async function login() {
-    
+
     // Preliminary input length checks
     if(email.value.length == 0 && password.value.length == 0) {
         responseMessage.value = loginErrorMap["EmptyEmailAndPassword"]
@@ -28,14 +28,11 @@ async function login() {
         return
     }
 
-    await firebaseAuth.signInWithEmailAndPassword(auth, email.value, password.value).then((userCredential) => {
-        console.log("Signed into user account:", userCredential.user)
-    }).catch((err) => {
+    await firebaseAuth.signInWithEmailAndPassword(auth, email.value, password.value).catch((err) => {
         console.log(err)
         responseMessage.value = loginErrorMap["WrongCredentials"]
     })
 }
-
 </script>
 
 <template>

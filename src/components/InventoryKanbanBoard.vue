@@ -8,6 +8,14 @@ import axios from 'axios';
 const availablePaints = ref([])
 const lowOnStockPaints = ref([])
 const outOfStockPaints = ref([])
+const lastUpdateTimeStamp = ref()
+const lastUpdateAuthor = ref()
+const userName = ref()
+const userPerms = ref('Reader')
+const userBoardInteractState = ref('Viewing')
+const canEditBoard = ref(false)
+const canDrag = ref(true)
+
 // Permitted colours are Blue, Grey, Black, White, Purple
 const paintQuantities = ref({
     "Blue" : -1,
@@ -16,14 +24,6 @@ const paintQuantities = ref({
     "White" : -1,
     "Purple" : -1
 })
-const lastUpdateTimeStamp = ref()
-const lastUpdateAuthor = ref()
-const userName = ref()
-const userPerms = ref('Reader')
-const userBoardInteractState = ref('Viewing')
-const canEditBoard = ref(false)
-const canDrag = ref(true)
-const authObservable = firebaseAuth.getAuth();
 
 const paintBackgroundColorMap = {
     "Blue": "bg-blue-400",
@@ -37,6 +37,8 @@ const interactStateText = {
     "Viewing" : "🔍 Viewing",
     "Editing" : "✏️ Editing"
 }
+
+const authObservable = firebaseAuth.getAuth();
 
 // Observable to watch onAuthState
 firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
@@ -73,10 +75,11 @@ const getPaintInventory = async() => {
         })
         
     } catch (err) {
-        console.log("Error fetching paint inventory", err)
+        console.error("Error fetching paint inventory", err)
     }
 }
 
+// API call to save changes to paint inventory
 const saveToPaintInventory = async(colour, val, status) => {
     // Update paint data in database
     try {
@@ -88,7 +91,7 @@ const saveToPaintInventory = async(colour, val, status) => {
         await axios.patch(endpoint, obj)
         
     } catch (err) {
-        console.log("Error when attempting to post paint data")
+        console.error("Error when attempting to post paint data")
         return
     } 
  
@@ -101,7 +104,7 @@ const saveToPaintInventory = async(colour, val, status) => {
         }
         await axios.patch(endpoint, obj)
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 }
 
@@ -112,13 +115,13 @@ const getLastUpdateTimeStamp = async () => {
         lastUpdateAuthor.value = data.author
         lastUpdateTimeStamp.value = data.timestamp
     } catch (err) {
-        console.log("Error fetching last update information", err)
+        console.error("Error fetching last update information", err)
     }
 }
 
 // Paint Quantity Event Listener
 const onValueChange = (paint, newVal, status) => {
-    console.log("Detected value update on paint:", paint, newVal)
+    //console.log("Detected value update on paint:", paint, newVal)
 
     saveToPaintInventory(paint, newVal, status)
 }
@@ -136,7 +139,6 @@ function onLaneChange(event) {
         } else if(outOfStockPaints.value.includes(paint)) {
             status = 'outofstock'
         }
-        console.log("Moved to", status)
 
         saveToPaintInventory(paint, paintQuantities.value[paint], status)
     }
@@ -201,7 +203,7 @@ onMounted(() => {
                                 <div class="w-16 h-1" :class="paintBackgroundColorMap[availablePaints]"></div>
                             </div>
                             <div class="flex text-sm ml-auto">
-                                <input v-model="paintQuantities[availablePaints]" v-on:focusin="canDrag = false" v-on:focusout="canDrag = true" v-on:change="onValueChange(availablePaints, paintQuantities[availablePaints], 'available')" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
+                                <input name="paintAmount" v-model="paintQuantities[availablePaints]" v-on:focusin="canDrag = false" v-on:focusout="canDrag = true" v-on:change="onValueChange(availablePaints, paintQuantities[availablePaints], 'available')" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
                                 <div class="ml-1">Gal</div>
                             </div>
                         </div>
@@ -219,7 +221,7 @@ onMounted(() => {
                                 <div class="w-20 h-1" :class="paintBackgroundColorMap[lowOnStockPaints]"></div>
                             </div>
                             <div class="flex text-sm ml-auto">
-                                <input v-model="paintQuantities[lowOnStockPaints]" v-on:focusin="canDrag = false" v-on:focusout="canDrag = true" v-on:change="onValueChange(lowOnStockPaints, paintQuantities[lowOnStockPaints], 'lowonstock')" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
+                                <input name="paintAmount" v-model="paintQuantities[lowOnStockPaints]" v-on:focusin="canDrag = false" v-on:focusout="canDrag = true" v-on:change="onValueChange(lowOnStockPaints, paintQuantities[lowOnStockPaints], 'lowonstock')" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
                                 <div class="ml-1">Gal</div>
                             </div>
                         </div>
@@ -237,7 +239,7 @@ onMounted(() => {
                                 <div class="w-20 h-1" :class="paintBackgroundColorMap[outOfStockPaints]"></div>
                             </div>
                             <div class="flex text-sm ml-auto">
-                                <input v-model="paintQuantities[outOfStockPaints]" v-on:focusin="canDrag = false" v-on:focusout="canDrag = true" v-on:change="onValueChange(outOfStockPaints, paintQuantities[outOfStockPaints], 'outofstock')" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
+                                <input name="paintAmount" v-model="paintQuantities[outOfStockPaints]" v-on:focusin="canDrag = false" v-on:focusout="canDrag = true" v-on:change="onValueChange(outOfStockPaints, paintQuantities[outOfStockPaints], 'outofstock')" type="number" class="w-12 h-5 text-right outline-none" :class="{'border border-gray-500': canEditBoard}" :disabled="!canEditBoard"/>
                                 <div class="ml-1">Gal</div>
                             </div>
                         </div>

@@ -11,15 +11,16 @@ const focusedUserName = ref()
 const focusedUserEmail = ref()
 const focusedUserRole = ref()
 const roleBackgroundColorMap = {
-    "Reader": "bg-green-200",
-    "Painter": "bg-red-200",
-    "Admin": "bg-blue-200"
+    "Reader": "bg-green-300",
+    "Painter": "bg-red-300",
+    "Admin": "bg-blue-300"
 }
 
 onValue(fbref(db, '/users'), (snapshot) => {
     allUsers.value = snapshot.val();
 })
 
+// Update values if admin selects a user
 const selectFocusedUser = (userKey, userObj) => {
     focusedUser.value = true
     focusedUserKey.value = userKey
@@ -28,6 +29,7 @@ const selectFocusedUser = (userKey, userObj) => {
     focusedUserRole.value = userObj.role
 }
 
+// Update user settings (name/role) by calling the backend API
 const updateUserSettings = async (userKey, email, displayName, role) => {
     try {
         const endpoint = import.meta.env.VITE_API_BASE_URL + "user/" + userKey
@@ -38,32 +40,35 @@ const updateUserSettings = async (userKey, email, displayName, role) => {
         }
         await axios.patch(endpoint, obj)
     } catch (err) {
-        console.log("Failed to update user settings:", err)
+        console.error("Failed to update user settings:", err)
     }
 }
 
+// Complete deletion of the user from Authentication and Database
 const deleteUser = async (userKey) => {
-    // Complete deletion is a two step process
-    console.log(userKey)
     const obj = {
         userID: userKey
     }
+
     // Delete from Firebase Auth Users
     try {
         const endpoint = import.meta.env.VITE_API_BASE_URL + "authuser/delete"
-        await axios.delete(endpoint, obj)
+        await axios.delete(endpoint, { data: obj})
+        //console.log("Sucessfully deleted user from Firebase Auth users")
     } catch (err) {
-        console.log("Failed to delete user from Firebase Auth users")
+        console.error("Failed to delete user from Firebase Auth users")
         return
     }
 
     // Delete from users database
     try {
         const endpoint = import.meta.env.VITE_API_BASE_URL + "user/delete"
-        await axios.delete(endpoint, obj)
+        await axios.delete(endpoint, {data: obj})
+        //console.log("Sucessfully deleted user from users database")
     } catch (err) {
-        console.log("Failed to delete user from database")
+        console.error("Failed to delete user from database")
     }
+    focusedUser.value = false
 }
 </script>
 
@@ -75,7 +80,7 @@ const deleteUser = async (userKey) => {
             <div>Role</div>
         </div>
         <div v-for="(user, key) in allUsers" :key="key" class="border-r border-y border-black">
-            <div class="flex justify-between p-4 border-black border-l-4 hover:cursor-pointer" :class="roleBackgroundColorMap[user.role]" @click="selectFocusedUser(key, user)">
+            <div class="flex justify-between p-4 border-black border-l-4 hover:cursor-pointer hover:bg-opacity-50" :class="roleBackgroundColorMap[user.role]" @click="selectFocusedUser(key, user)">
                 <span>{{ user.name }}</span>
                 <span>{{ user.email }}</span>
                 <span>{{ user.role }}</span>
@@ -85,11 +90,11 @@ const deleteUser = async (userKey) => {
             <div class="flex p-2">
                 <div class="">
                     <div>Name</div>
-                    <input v-model="focusedUserName" class="pl-1 border border-black rounded-md w-32 outline-none" />
+                    <input name="usersListName" v-model="focusedUserName" class="pl-1 border border-black rounded-md w-32 outline-none" />
                 </div>
                 <div class="ml-auto">
                     <div>Role</div>
-                    <select v-model="focusedUserRole" class="pl-1 border border-black rounded-md w-32 outline-none">
+                    <select name="usersListRole" v-model="focusedUserRole" class="pl-1 border border-black rounded-md w-32 outline-none">
                         <option>Reader</option>
                         <option>Painter</option>
                         <option>Admin</option>
@@ -98,7 +103,7 @@ const deleteUser = async (userKey) => {
             </div>
             <div class="px-2">
                 <div>Email</div>
-                <input v-model="focusedUserEmail" class="pl-1 border border-black rounded-md w-64 outline-none" disabled="true"/>
+                <input name="usersListEmail" v-model="focusedUserEmail" class="pl-1 border border-black rounded-md w-64 outline-none" disabled="true"/>
             </div>
             <div class="flex font-semibold">
                 <div class="p-2 hover:cursor-pointer hover:text-white" @click="updateUserSettings(focusedUserKey, focusedUserEmail, focusedUserName, focusedUserRole)">Save</div>

@@ -1,11 +1,12 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import LoginBox from '@/components/LoginBox.vue'
 import { ref, computed } from 'vue' 
 import * as firebaseAuth from "firebase/auth";
 import { auth } from '@/firebase'
 import { getUsername, getRole } from './helpers/helper';
 
+const router = useRouter()
 const authObservable = firebaseAuth.getAuth();
 const user = ref()
 const username = ref('')
@@ -31,10 +32,12 @@ firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
 // Concludes authentication period for the user
 async function logout() {
     await firebaseAuth.signOut(auth).then(() => {
+        if(router.currentRoute.value.name != 'home') {
+            router.push('/')
+        }
         console.log("Successfully Logged out")
-
     }).catch((err) => {
-        console.log("Logout error:", err)
+        console.error("Logout error:", err)
     })
 }
 

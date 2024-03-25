@@ -16,6 +16,7 @@ const userCreationResponseMap = ({
     "Success": "✔️ Successfully created the new user"
 })
 
+// Creates a new user (Authentication and Database)
 async function createUser(email, password, displayName, role) {
     // Preliminary input checks
     if(email.length == 0) {
@@ -39,6 +40,7 @@ async function createUser(email, password, displayName, role) {
     }
 
     const newUserid = ref(null)
+    // Creates new auth user
     try {
         const endpoint = import.meta.env.VITE_API_BASE_URL + "authuser/create"
         const authUserObj = {
@@ -55,6 +57,7 @@ async function createUser(email, password, displayName, role) {
         return
     }
 
+    // Creates corresponding user entry in the database
     if(newUserid.value != null) {
         try {
             const endpoint = import.meta.env.VITE_API_BASE_URL + "user/create"
@@ -78,6 +81,7 @@ async function createUser(email, password, displayName, role) {
     clearRefValues()
 }
 
+// Cleanup fields after successful operation to avoid multiple submittion
 const clearRefValues = () => {
     email.value = ''
     password.value = ''
@@ -91,13 +95,13 @@ const clearRefValues = () => {
         <h1 class="text-2xl mb-4">New User Creation</h1>
         <div class="flex flex-col gap-2">
             <div>Email</div>
-            <input v-model="email" placeholder="" class="pl-1 border border-black rounded-md"/>
+            <input id="email" v-model="email" autocomplete="off" class="pl-1 border border-black rounded-md"/>
             <div>Password</div>
-            <input v-model="password" placeholder="" class="pl-1 border border-black rounded-md"/>
+            <input id="password" v-model="password" autocomplete="off" class="pl-1 border border-black rounded-md"/>
             <div>Display Name</div>
-            <input v-model="newDisplayName" placeholder="" class="pl-1 border border-black rounded-md"/>
+            <input id="username" v-model="newDisplayName" autocomplete="off" class="pl-1 border border-black rounded-md"/>
             <div>Role</div>
-            <select v-model="role" class="pl-1 border border-black rounded-md">
+            <select id="role" v-model="role" class="pl-1 border border-black rounded-md">
                 <option disabled value="">Please select a role</option>
                 <option>Reader</option>
                 <option>Painter</option>
