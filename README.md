@@ -14,11 +14,11 @@ https://paintcompany-f9438.web.app
 ### Test Accounts and Roles
 | Login   | Password | Role    |      Privileges    |
 | ------  | -------- | ------- | -------------------|
-| Adam@mail.com    | 123456   | Admin   | Admin Panel Access |
-| Jane@mail.com    | 123456   | Painter | Board Read & Edit  |
-| Painter@mail.com | 123456   | Painter | Board Read & Edit  |
-| John@mail.com    | 123456   | Reader  | Board Read         |
-| Jake@mail.com    | 123456   | Reader  | Board Read         |
+| adam@mail.com    | 123456   | Admin   | Admin Panel Access |
+| jane@mail.com    | 123456   | Painter | Board Read & Edit  |
+| painter@mail.com | 123456   | Painter | Board Read & Edit  |
+| john@mail.com    | 123456   | Reader  | Board Read         |
+| jake@mail.com    | 123456   | Reader  | Board Read         |
 
 ⚠️ Users can be created or deleted through the admin panel
 ## Development
