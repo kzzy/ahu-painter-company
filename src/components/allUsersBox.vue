@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { db } from '@/firebase'
-import { ref as fbref, onValue, update } from 'firebase/database'
-import { auth } from '@/firebase';
+import { ref as fbref, onValue } from 'firebase/database'
+import axios from 'axios'
 
 const allUsers = ref()
 const focusedUser = ref(false)
@@ -16,7 +16,6 @@ const roleBackgroundColorMap = {
     "Admin": "bg-blue-200"
 }
 
-
 onValue(fbref(db, '/users'), (snapshot) => {
     allUsers.value = snapshot.val();
 })
@@ -29,19 +28,43 @@ const selectFocusedUser = (userKey, userObj) => {
     focusedUserRole.value = userObj.role
 }
 
-const updateUserSettings = (userKey, email, displayName, role) => {
-    update(fbref(db, 'users/' + userKey), {
-        email:email,
-        name:displayName,
-        role:role
-    }).then(() => {
-        console.log ("Successfully updated the data of the user on the table")
-        focusedUser.value = false
-    }).catch((err) => {
-        console.log("Error on updating the user:", err)
-    })
+const updateUserSettings = async (userKey, email, displayName, role) => {
+    try {
+        const endpoint = import.meta.env.VITE_API_BASE_URL + "user/" + userKey
+        const obj = {
+            email: email,
+            name: displayName,
+            role: role
+        }
+        await axios.patch(endpoint, obj)
+    } catch (err) {
+        console.log("Failed to update user settings:", err)
+    }
 }
 
+const deleteUser = async (userKey) => {
+    // Complete deletion is a two step process
+    console.log(userKey)
+    const obj = {
+        userID: userKey
+    }
+    // Delete from Firebase Auth Users
+    try {
+        const endpoint = import.meta.env.VITE_API_BASE_URL + "authuser/delete"
+        await axios.delete(endpoint, obj)
+    } catch (err) {
+        console.log("Failed to delete user from Firebase Auth users")
+        return
+    }
+
+    // Delete from users database
+    try {
+        const endpoint = import.meta.env.VITE_API_BASE_URL + "user/delete"
+        await axios.delete(endpoint, obj)
+    } catch (err) {
+        console.log("Failed to delete user from database")
+    }
+}
 </script>
 
 <template>
@@ -78,9 +101,9 @@ const updateUserSettings = (userKey, email, displayName, role) => {
                 <input v-model="focusedUserEmail" class="pl-1 border border-black rounded-md w-64 outline-none" disabled="true"/>
             </div>
             <div class="flex font-semibold">
-                <div class="p-2 hover:cursor-pointer hover:text-gray-800" @click="updateUserSettings(focusedUserKey, focusedUserEmail, focusedUserName, focusedUserRole)">Save</div>
-                <div class="p-2 hover:cursor-pointer hover:text-gray-800" @click="focusedUser = false">Cancel</div>
-                <div class="p-2 ml-auto hover:cursor-pointer hover:text-gray-800">Delete</div>
+                <div class="p-2 hover:cursor-pointer hover:text-white" @click="updateUserSettings(focusedUserKey, focusedUserEmail, focusedUserName, focusedUserRole)">Save</div>
+                <div class="p-2 hover:cursor-pointer hover:text-white" @click="focusedUser = false">Cancel</div>
+                <div class="p-2 ml-auto hover:cursor-pointer hover:text-white" @click="deleteUser(focusedUserKey)">Delete</div>
             </div>
         </div>
     </div>

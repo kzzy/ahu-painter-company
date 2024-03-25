@@ -9,11 +9,11 @@ import { getUsername, getRole } from './helpers/helper';
 const authObservable = firebaseAuth.getAuth();
 const user = ref()
 const username = ref('')
+const toggleLoginBox = ref(false)
+const isAdmin = ref(false)
 const isSignedIn = computed(() => {
     return user.value != null ? true : false
 })
-const toggleLoginBox = ref(false)
-const isAdmin = ref(false)
 
 // Observable to watch onAuthState
 firebaseAuth.onAuthStateChanged(authObservable, (userCredential) => {
@@ -38,6 +38,7 @@ async function logout() {
     })
 }
 
+// Apply username and role identity to the user
 const updateAccountBar = async (userID) => {
     username.value = await getUsername(userID)
 
@@ -61,6 +62,7 @@ const updateAccountBar = async (userID) => {
         <div v-if="isSignedIn">
             Signed in as {{ username }}
         </div>
+        <RouterLink to="/" v-if="isAdmin" class="hover:cursor-pointer hover:text-gray-500">Home</RouterLink>
         <RouterLink to="/admin" v-if="isAdmin" class="hover:cursor-pointer hover:text-gray-500">Admin</RouterLink>
         <div v-if="isSignedIn" class="hover:cursor-pointer hover:text-gray-500" @click="logout()">
             Logout

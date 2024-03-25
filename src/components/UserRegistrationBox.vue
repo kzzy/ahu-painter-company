@@ -1,15 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import * as firebaseAuth from "firebase/auth";
-import { auth, db } from '@/firebase'
-import { ref as fbref, set } from 'firebase/database'
+import axios from 'axios'
 
 const email = ref('')
 const password = ref('')
 const newDisplayName = ref('')
 const role = ref('')
 const responseMessage = ref('')
-
 const userCreationResponseMap = ({ 
     "EmptyEmail": "❗ Please enter an email",
     "EmptyPassword": "❗ Please enter a password",
@@ -41,22 +38,44 @@ async function createUser(email, password, displayName, role) {
         return
     }
 
+    const newUserid = ref(null)
+    try {
+        const endpoint = import.meta.env.VITE_API_BASE_URL + "authuser/create"
+        const authUserObj = {
+            email: email,
+            password: password
+        }
 
-    await firebaseAuth.createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-        console.log("Created new account with userid:", userCredential.user.uid)
-
-        set(fbref(db, 'users/' + userCredential.user.uid), {
-            email:email,
-            name:displayName,
-            role:role
-        });
-        responseMessage.value = userCreationResponseMap['Success']
-        clearRefValues()
-
-    }).catch((err) => {
+        const res = await axios.put(endpoint, authUserObj)
+        newUserid.value = res.data.message;
+        console.log("Created new user with user id:", newUserid.value)
+    } catch (err) {
+        console.log("Failed to create a new user in Firebase Auth:", err)
         responseMessage.value = userCreationResponseMap['ErrorCreating']
-        console.log("Signup error:", err)
-    })
+        return
+    }
+
+    if(newUserid.value != null) {
+        try {
+            const endpoint = import.meta.env.VITE_API_BASE_URL + "user/create"
+            const dbUserObj = {
+                userID: newUserid.value,
+                name: displayName,
+                email: email,
+                role: role
+            }
+
+            await axios.put(endpoint, dbUserObj)
+            console.log("Created database entry for corresponding user id:", newUserid.value)
+        } catch (err) {
+            responseMessage.value = userCreationResponseMap['ErrorCreating']
+            console.log("Failed to create a new user in the database:", err)
+            return
+        }
+    }
+
+    responseMessage.value = userCreationResponseMap['Success']
+    clearRefValues()
 }
 
 const clearRefValues = () => {

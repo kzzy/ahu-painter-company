@@ -13,7 +13,9 @@ const loginErrorMap = ({
     "EmptyEmailAndPassword": "❗ Please fill in your credentials"
 })
 
+// Clientside Firebase User Authentication
 async function login() {
+    
     // Preliminary input length checks
     if(email.value.length == 0 && password.value.length == 0) {
         responseMessage.value = loginErrorMap["EmptyEmailAndPassword"]
